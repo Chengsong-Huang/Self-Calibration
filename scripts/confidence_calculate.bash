@@ -10,12 +10,12 @@ if [ $# -lt 3 ]; then
 fi
 
 datasets=(
-  # "object_counting"
-  # "gsm8k"
+  "object_counting"
+  "gsm8k"
   "math_qa"
-  # "arc_challenge"
-  # "arc_easy"
-  # "svamp"
+  "arc_challenge"
+  "arc_easy"
+  "svamp"
 )
 
 GPU_QUEUE=($(nvidia-smi --query-gpu=index --format=csv,noheader))

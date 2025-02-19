@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#bash main.bash ./models/llama llama/ meta-llama/Llama-3.1-8B-Instruct
+#bash main.bash ./models/llama llama meta-llama/Llama-3.1-8B-Instruct
 
 # Check for required arguments
 if [ "$#" -ne 3 ]; then

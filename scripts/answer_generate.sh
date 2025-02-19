@@ -9,12 +9,12 @@ MODEL_PATH="$1"
 OUTPUT_DIR="$2"
 GENERATION_COUNT=$3
 TASKS=(
-  # "object_counting"
-  # "gsm8k"
+  "object_counting"
+  "gsm8k"
   "math_qa"
-  # "arc_challenge"
-  # "arc_easy"
-  # "svamp"
+  "arc_challenge"
+  "arc_easy"
+  "svamp"
 )
 TEMPERATURE=1.0
 NGPUS=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)

@@ -16,7 +16,7 @@
     "causal_lm_ratio": 0.8,
     "use_zero": false,
     "deepspeed_config": "configs/ds_config.json",
-    "dataset": "ChengsongHuang/ds-1.5B",
+    "dataset": "HINT-lab/DeepSeek-R1-Distill-Qwen-1.5B-Self-Calibration",
     "threshold": 0.75,
     "datasets": [
       {

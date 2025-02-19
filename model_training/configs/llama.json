@@ -3,7 +3,7 @@
     "distributed": true,
     "use_wandb": true,
     "wandb_project": "multidataset",
-    "total_train_samples": 10000,
+    "total_train_samples": 100000,
     "total_eval_samples": 5000,
     "batch_size": 1,
     "gradient_accumulation_steps": 64,
