@@ -18,7 +18,7 @@ where $c_i$ reflects the confidence of the $i$-th response, and $\mathbf{1}(y_i 
 <figure style="text-align:center">
   <img src="./figures/intro.png">
 </figure>
- As shown in the previous figure, confidence-weighted Self-Consistency improves MathQA accuracy over their baselines from 81.0 to 83.6 with an average sampling budget of 16 responses. More importantly, our approaches can achieve comparable performance with substantially fewer computational resources. confidence-weighted Self-Consistency can save 94.2\% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
+ As shown in the previous figure, confidence-weighted Self-Consistency improves MathQA accuracy over their baselines from 81.0 to 83.6 with an average sampling budget of 16 responses. More importantly, our approaches can achieve comparable performance with substantially fewer computational resources. confidence-weighted Self-Consistency can save 94.2% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
 <br><br>
 However, extracting accurate confidence can be challenging since vanilla LLMs are known to be overconfident on their own responses and their confidence often exceeds the actual accuracy.
 
@@ -27,9 +27,7 @@ Hence, we propose a new framework, Self-Calibration, that can make model generat
 <figure style="text-align:center">
   <img src="./figures/self-calibration.jpg">
 </figure>
-Illustration of the Self-Calibration framework. Given a query from the seed dataset, we sample N responses from the LLM. We use a confidence querying prompt to let LLM assign a confidence score to each response. Responses are then grouped by their answers, and the Soft Self-Consistency (SSC) score is computed for each group. During training, all data tuples contribute to improving the model's calibration, while higher-confidence data is used to enhance the LLM's generation ability.
-
-In test time, we design **efficient test-time scaling strategies using these calibrated confidence scores**, such as early stopping for Best-of-N when sampled responses reach a target confidence, and Self-Consistency weighted by reliable confidence.
+Here is the illustration of the Self-Calibration framework. Given a query from the seed dataset, we sample N responses from the LLM. We use a confidence querying prompt to let LLM assign a confidence score to each response. Responses are then grouped by their answers, and the Soft Self-Consistency (SSC) score is computed for each group. During training, all data tuples contribute to improving the model's calibration, while higher-confidence data is used to enhance the LLM's generation ability.
 
 
 
