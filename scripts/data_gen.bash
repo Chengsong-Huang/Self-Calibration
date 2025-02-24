@@ -1,21 +1,41 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
+# Default values
+model_name="meta-llama/Llama-3.1-8B-Instruct"
+temperature=0.8
+use_cot_flag="--use_cot"
+num_generations=32
+subset="train"
+data_size=100
+save_path="llama"
 
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --model_name) model_name="$2"; shift 2;;
+    --temperature) temperature="$2"; shift 2;;
+    --use_cot_flag) use_cot_flag="$2"; shift 2;;
+    --num_generations) num_generations="$2"; shift 2;;
+    --subset) subset="$2"; shift 2;;
+    --data_size) data_size="$2"; shift 2;;
+    --save_path) save_path="$2"; shift 2;;
+    -h|--help)
+      echo "Usage: bash data_gen.bash [--model_name <model>] [--temperature <temp>] [--use_cot_flag <flag>] [--num_generations <num>] [--subset <subset>] [--data_size <size>] [--save_path <path>]"
+      exit 0;;
+    *)
+      echo "Unknown argument: $1"
+      exit 1;;
+  esac
+done
 
-
-model_name="$1"
-temperature="$2"
-use_cot_flag="$3"
-num_generations="$4"
-subset="$5"
-data_size="$6"
-save_path="$7"
-
-if [ $# -lt 7 ]; then
-  echo "Error: Missing arguments."
-  echo "Usage: bash run_generation.sh <model_name> <temperature> <use_cot_flag> <num_generations> <subset> <data_size> <save_path>"
-  exit 1
-fi
+echo "Running with:"
+echo "  Model Name     : $model_name"
+echo "  Temperature    : $temperature"
+echo "  Use COT Flag   : $use_cot_flag"
+echo "  Num Generations: $num_generations"
+echo "  Subset         : $subset"
+echo "  Data Size      : $data_size"
+echo "  Save Path      : $save_path"
 
 datasets=(
     "gsm8k"
@@ -44,17 +64,6 @@ start_job() {
   echo "==> [$(date '+%Y-%m-%d %H:%M:%S')] Start dataset [${dataset}] on GPU [${gpu_id}] ..."
 
   CUDA_VISIBLE_DEVICES="${gpu_id}" \
-  # python data_creation/data_generator.py \
-  #     --model_name "${model_name}" \
-  #     --temperature "${temperature}" \
-  #     ${use_cot_flag} \
-  #     --dataset_name "${dataset}" \
-  #     --num_generations "${num_generations}" \
-  #     --subset "${subset}" \
-  #     --data_size "${data_size}" \
-  #     --n_GPU 1 \
-  #     --save_path "${save_path}" &
-
   python data_creation/data_generator_dt.py \
       --model_name "${model_name}" \
       --temperature "${temperature}" \

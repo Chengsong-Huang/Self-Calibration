@@ -5,6 +5,25 @@ SPECIAL_SUFFIXS = {
     'ds': "<｜end▁of▁sentence｜><｜User｜>Directly answer the question by Yes or No:Is the answer correct?<｜Assistant｜></think>\n\n"
 }
 
+
+EOS_TOKENS = {
+    "llama": "<|eot_id|>",
+    'phi': "<|im_end|>",
+    'qwen': "<|im_end|>",
+    'ds': "<｜end▁of▁sentence｜>"
+}
+
+def get_eos_token(model_name):
+    if 'llama' in model_name.lower():
+        return EOS_TOKENS['llama']
+    elif 'phi' in model_name.lower():
+        return EOS_TOKENS['phi']
+    elif 'qwen' in model_name.lower():
+        return EOS_TOKENS['qwen']
+    elif 'ds' or 'deepseek' in model_name.lower():
+        return EOS_TOKENS['ds']
+    else: return EOS_TOKENS['llama']
+    
 def get_suffix(model_name):
     if 'llama' in model_name.lower():
         return SPECIAL_SUFFIXS['llama']

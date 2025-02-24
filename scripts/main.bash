@@ -1,16 +1,28 @@
 #!/bin/bash
 
-#bash main.bash ./models/llama llama meta-llama/Llama-3.1-8B-Instruct
+MERGED_MODEL_PATH="./models/llama"
+VERSION="llama"
+BASEMODEL="meta-llama/Llama-3.1-8B-Instruct"
 
-# Check for required arguments
-if [ "$#" -ne 3 ]; then
-  echo "Usage: $0 <merged_model_path> <version> <basemodel>"
-  exit 1
-fi
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --merged_model_path) MERGED_MODEL_PATH="$2"; shift 2;;
+    --version) VERSION="$2"; shift 2;;
+    --basemodel) BASEMODEL="$2"; shift 2;;
+    -h|--help)
+      echo "Usage: bash main.bash [--merged_model_path <path>] [--version <version>] [--basemodel <base>]"
+      exit 0;;
+    *)
+      echo "Unknown argument: $1"
+      exit 1;;
+  esac
+done
 
-MERGED_MODEL_PATH=$1
-VERSION=$2
-BASEMODEL=$3
+echo "Running with:"
+echo "  Merged Model Path: $MERGED_MODEL_PATH"
+echo "  Version          : $VERSION"
+echo "  Base Model       : $BASEMODEL"
 # Step 1: Train model
 torchrun --nproc_per_node=4 --master_port=12345 model_training/train.py \
   --config_file model_training/configs/${VERSION}.json \

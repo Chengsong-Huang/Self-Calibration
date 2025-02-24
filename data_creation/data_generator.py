@@ -18,54 +18,6 @@ from utils.SPECIAL_SUFFIXS import *
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def generate_prompt(args, logger, qa_data, answer_type="number", tokenizer=None):
-    if answer_type == "option letter":
-        demo = '(A)'
-    elif answer_type == "number":
-        demo = 1
-    else:
-        demo = '(A)'
-
-    if args.use_cot:
-        logger.info("Using COT format for answers")
-        PROMPT = (
-            "For the following question, provide a step-by-step explanation of your thought process.\n"
-            "Use the format demonstrated below for your response.\n"
-            "```Example Format:\n"
-            "Explanation: <Your detailed explanation here, outlining how you arrived at your answer.>\n"
-            f"Answer: <Insert your concise answer here, which should include a {answer_type} (e.g., {demo})>\n"
-            "Ensure that your response strictly adheres to this format. Explicitly include the words 'Explanation:', 'Answer:'."
-        ).strip()
-    else:
-        logger.info("Using standard format for answers")
-        PROMPT = (
-            f"For the following question, provide your answer including only the {answer_type}.\n"
-            "Do not include any additional text, characters, or explanations. Use the format demonstrated below for your response.\n"
-            "```Example Format:\n"
-            f"Answer: <Insert only the {answer_type} here (e.g., {demo})>\n"
-            f"Ensure that your response strictly adheres to this format and contain only the {answer_type}. Explicitly include the words 'Answer:'in your response."
-        ).strip()
-
-    prompts = []
-    assert len(qa_data) > 0, "No data found"
-
-    for question in qa_data.keys():
-        if tokenizer and hasattr(tokenizer, "apply_chat_template"):
-
-            chat = [
-                {"role": "system", "content": PROMPT},
-                {"role": "user", "content": f"Question: {question}"},
-            ]
-            prompt = tokenizer.apply_chat_template(chat, tokenize=False, add_generation_prompt=True , add_special_tokens=True)
-        else:
-            logger.info("no chat template")
-            prompt = f"{PROMPT}\n\nQuestion: {question}"
-
-        prompts.append(prompt)
-    assert len(prompts) == len(qa_data), f"Prompt generation failed. Expected {len(qa_data)} prompts, got {len(prompts)}"
-    logger.info(f"Sample prompt: {prompts[0]}")
-    return prompts, qa_data
-
 # Function to generate responses
 def generate_response_batch(prompts, llm, max_length=1024, temperature=0.8):
     sampling_params = SamplingParams(max_tokens=max_length, temperature=temperature)

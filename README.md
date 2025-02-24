@@ -2,21 +2,26 @@
 
 The official repository which contains the code and pre-trained models/datasets for our paper ```Efficient Test-Time Scaling via Self-Calibration```. 
 # 🔥 Updates
-- [**2025-2-20**]: We released our codes, models and datasets.
+- [**2025-2-25**]: We released our codes, models and datasets.
 
 # 🏴󠁶󠁵󠁭󠁡󠁰󠁿 Overview
+<!-- We propose a new framework, Self-Calibration, that can make model generate calibrated confidence score.  -->
+We propose an efficient test-time scaling method by using model confidence for dynamically sampling adjustment, since confidence can be seen as an intrinsic measure that directly reflects model uncertainty on different tasks. 
+However, extracting accurate confidence can be challenging since LLMs are known to be overconfident on their own responses and their confidence often exceeds the actual accuracy.
 
-We propose a new framework, Self-Calibration, that can make model generate calibrated confidence score. 
+Hence, we propose a new framework, Self-Calibration, that can make model generate calibrated confidence score. 
 <br>
 <figure style="text-align:center">
   <img src="./figures/self-calibration.jpg">
 </figure>
 Illustration of the Self-Calibration framework. Given a query from the seed dataset, we sample $N$ responses from the LLM. We use a confidence querying prompt to let LLM assign a confidence score to each response. Responses are then grouped by their answers, and the Soft Self-Consistency (SSC) score is computed for each group. During training, all data tuples contribute to improving the model's calibration, while higher-confidence data is used to enhance the LLM's generation ability.
+
+In test time, we design **efficient test-time scaling strategies using these calibrated confidence scores**, such as early stopping for Best-of-N when sampled responses reach a target confidence, and Self-Consistency weighted by reliable confidence.
 <br>
 <figure style="text-align:center">
-  <img src="./figures/results.jpg">
+  <img src="./figures/intro.jpg">
 </figure>
-At test time, we design efficient test-time scaling strategies using these calibrated confidence scores, such as early stopping for Best-of-N when sampled responses reach a target confidence, and Self-Consistency weighted by reliable confidence.
+Specifically, both Early Stopping for Best-of-N and confidence-weighted Self-Consistency improve MathQA accuracy over their baselines from 81.0 to 83.6 with an average sampling budget of 16 responses. More importantly, our approaches can achieve comparable performance with substantially fewer computational resources. As shown in the previous figure, confidence-weighted Self-Consistency can save 94.2\% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
 
 
 # ⚡️ Quickstart
@@ -31,36 +36,69 @@ pip install vllm -U
 ```
 ## Usage
 
+### Sampling Methods
+To use an (efficient) sampling methods, you may use
+```python
+inference = SampleInference(
+    model_name=model_name,
+    eos_token_str=eos_token_str,
+    I=I,
+    torch_dtype=torch.float16,
+    device_map="auto"
+)
+```
+to start an inferencer, and then use 
+```python
+result = inference.run_inference_interactive(
+                query=prompt,
+                method=method, #["earlyexit", "asc_conf", "asc", "sc", "sc_conf", "best_of_n"]
+                threshold=0.7, # threshold in earlyexit, asc and asc_conf
+                max_samples=16, # the number of sampling times in sc, sc_conf and best_of_n. These number is also the max sample times in earlyexit, asc and asc_conf
+                temperature=0.8,
+                extract_handler=dataset_handler
+            )
+```
+
+The example codes can be used by 
+```bash
+python sampling_methods/sample.py --use_cot --model_name HINT-lab/Llama_3.1-8B-Instruct-Self-Calibration --dataset_name gsm8k
+```
+
 ### Data_Creation
 The dynamic temperature version is quite slow. You can also use non-dt version by change `data_generator_dt` to `data_generator` in `data_gen.bash`.
 ```bash
-bash scripts/data_gen.bash \
-    meta-llama/Llama-3.1-8B-Instruct \
-    0.8 \ # temperature
-    "--use_cot" \
-    32 \ # number of generation
-    "train" \
-    100 \ # number of samples in each dataset
-    "llama" #saving path
+bash data_gen.bash \
+  --model_name "meta-llama/Llama-3.1-8B-Instruct" \
+  --temperature 0.8 \
+  --use_cot_flag "--use_cot" \
+  --num_generations 32 \
+  --subset "train" \
+  --data_size 100 \
+  --save_path "llama"
+```
+Also, you can use the default settings by 
+```
+bash data_gen.bash
 ```
 
 ### Model Training
 ```bash
-# trianing details should be written in model_training/configs/{config_name}.json
+# trianing details should be written in model_training/configs/{version}.json
 bash scripts/main.bash \
-    ./models/llama \ # save path
-    config_name \ # config path
-    meta-llama/Llama-3.1-8B-Instruct # basemodel
+  --merged_model_path "./models/llama" \
+  --version "llama" \
+  --basemodel "meta-llama/Llama-3.1-8B-Instruct"
 ```
 
 ### Evaluation
 ```bash
 bash scripts/evaluate.bash \
-    model_path \
-    task_name \
-    generation_number \
+    --model "meta-llama/Llama-3.1-8B-Instruct" \
+    --answer_folder "example" \
+    --num_generations 16 \
 ```
-### Add New Datasets or New m=Models
+
+### Add New Datasets or New Models
 If you want to add a new dataset for data generation or test, you should update the `utils/dataset_loader.py` to implement a new dataset handler
 <details>
 
