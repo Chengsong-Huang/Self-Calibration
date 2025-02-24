@@ -6,22 +6,31 @@ The official repository which contains the code and pre-trained models/datasets 
 
 # 🏴󠁶󠁵󠁭󠁡󠁰󠁿 Overview
 <!-- We propose a new framework, Self-Calibration, that can make model generate calibrated confidence score.  -->
-We propose an efficient test-time scaling method by using model confidence for dynamically sampling adjustment, since confidence can be seen as an intrinsic measure that directly reflects model uncertainty on different tasks. 
-However, extracting accurate confidence can be challenging since LLMs are known to be overconfident on their own responses and their confidence often exceeds the actual accuracy.
+We propose an efficient test-time scaling method by using model confidence for dynamically sampling adjustment, since confidence can be seen as an intrinsic measure that directly reflects model uncertainty on different tasks. For example, we can incorporate the model’s confidence into self-consistency by assigning each sampled response \( y_i \) a confidence score \( c_i \). Instead of treating all responses equally, we perform a **weighted** aggregation as follows:
+
+$$
+y = \arg\max_{z}\;\sum_{i=1}^{N} c_i \, \mathbf{1}{(y_i = z)}
+$$
+
+where \(c_i\) reflects the confidence of the \(i\)-th response, and \( \mathbf{1}(y_i = z) \) is an indicator function that equals 1 if \( y_i = z \) and 0 otherwise. This way, responses with higher confidence have a greater influence on the final answer.
+
+<br>
+<figure style="text-align:center">
+  <img src="./figures/intro.jpg">
+</figure>
+ As shown in the previous figure, confidence-weighted Self-Consistency improves MathQA accuracy over their baselines from 81.0 to 83.6 with an average sampling budget of 16 responses. More importantly, our approaches can achieve comparable performance with substantially fewer computational resources. confidence-weighted Self-Consistency can save 94.2\% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
+<br><br>
+However, extracting accurate confidence can be challenging since vanilla LLMs are known to be overconfident on their own responses and their confidence often exceeds the actual accuracy.
 
 Hence, we propose a new framework, Self-Calibration, that can make model generate calibrated confidence score. 
 <br>
 <figure style="text-align:center">
   <img src="./figures/self-calibration.jpg">
 </figure>
-Illustration of the Self-Calibration framework. Given a query from the seed dataset, we sample $N$ responses from the LLM. We use a confidence querying prompt to let LLM assign a confidence score to each response. Responses are then grouped by their answers, and the Soft Self-Consistency (SSC) score is computed for each group. During training, all data tuples contribute to improving the model's calibration, while higher-confidence data is used to enhance the LLM's generation ability.
+Illustration of the Self-Calibration framework. Given a query from the seed dataset, we sample N responses from the LLM. We use a confidence querying prompt to let LLM assign a confidence score to each response. Responses are then grouped by their answers, and the Soft Self-Consistency (SSC) score is computed for each group. During training, all data tuples contribute to improving the model's calibration, while higher-confidence data is used to enhance the LLM's generation ability.
 
 In test time, we design **efficient test-time scaling strategies using these calibrated confidence scores**, such as early stopping for Best-of-N when sampled responses reach a target confidence, and Self-Consistency weighted by reliable confidence.
-<br>
-<figure style="text-align:center">
-  <img src="./figures/intro.jpg">
-</figure>
-Specifically, both Early Stopping for Best-of-N and confidence-weighted Self-Consistency improve MathQA accuracy over their baselines from 81.0 to 83.6 with an average sampling budget of 16 responses. More importantly, our approaches can achieve comparable performance with substantially fewer computational resources. As shown in the previous figure, confidence-weighted Self-Consistency can save 94.2\% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
+
 
 
 # ⚡️ Quickstart
@@ -37,7 +46,7 @@ pip install vllm -U
 ## Usage
 
 ### Sampling Methods
-To use an (efficient) sampling methods, you may use
+To use an (efficient) sampling method, you may use
 ```python
 inference = SampleInference(
     model_name=model_name,
@@ -47,7 +56,7 @@ inference = SampleInference(
     device_map="auto"
 )
 ```
-to start an inferencer, and then use 
+to start an inference engine, and you may use
 ```python
 result = inference.run_inference_interactive(
                 query=prompt,
@@ -65,7 +74,7 @@ python sampling_methods/sample.py --use_cot --model_name HINT-lab/Llama_3.1-8B-I
 ```
 
 ### Data_Creation
-The dynamic temperature version is quite slow. You can also use non-dt version by change `data_generator_dt` to `data_generator` in `data_gen.bash`.
+You can generate the data by the following scripts,
 ```bash
 bash data_gen.bash \
   --model_name "meta-llama/Llama-3.1-8B-Instruct" \
@@ -80,10 +89,11 @@ Also, you can use the default settings by
 ```
 bash data_gen.bash
 ```
+The dynamic temperature version is quite slow. You can may use non-dt version by change `data_generator_dt` to `data_generator` in `data_gen.bash`, which is more faster but the responses are possibly less diverse. 
 
 ### Model Training
 ```bash
-# trianing details should be written in model_training/configs/{version}.json
+# training details should be written in model_training/configs/{version}.json
 bash scripts/main.bash \
   --merged_model_path "./models/llama" \
   --version "llama" \
