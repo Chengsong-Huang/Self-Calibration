@@ -9,7 +9,7 @@ The official repository which contains the code and pre-trained models/datasets 
 We propose an efficient test-time scaling method by using model confidence for dynamically sampling adjustment, since confidence can be seen as an intrinsic measure that directly reflects model uncertainty on different tasks. For example, we can incorporate the model’s confidence into self-consistency by assigning each sampled response $y_i$ a confidence score $c_i$. Instead of treating all responses equally, we perform a **weighted** aggregation as follows:
 
 $$
-y = \arg\max_{z}\;\sum_{i=1}^{N} c_i \, \mathbf{1}{(y_i = z)}
+y = \arg\max_{z}\sum_{i=1}^{N} c_i \mathbf{1}{(y_i = z)}
 $$
 
 where $c_i$ reflects the confidence of the $i$-th response, and $\mathbf{1}(y_i = z)$ is an indicator function that equals 1 if $y_i = z$ and 0 otherwise. This way, responses with higher confidence have a greater influence on the final answer. Or we can also apply confidence to other test-time scaling methods like best-of-N. The details can be found in our paper.
@@ -18,7 +18,7 @@ where $c_i$ reflects the confidence of the $i$-th response, and $\mathbf{1}(y_i 
 <figure style="text-align:center">
   <img src="./figures/intro.png">
 </figure>
- As shown in the previous figure, confidence-weighted Self-Consistency improves MathQA accuracy over their baselines from 81.0 to 83.6 with an average sampling budget of 16 responses. More importantly, our approaches can achieve comparable performance with substantially fewer computational resources. confidence-weighted Self-Consistency can save 94.2% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
+ As shown in the previous figure, our approaches can achieve comparable performance with substantially fewer computational resources. The confidence-weighted Self-Consistency can save 94.2% samples to achieve an accuracy of 85.0, compared to standard Self-Consistency, demonstrating that reliable confidence estimation can significantly enhance the computational efficiency of test-time scaling.
 <br><br>
 However, extracting accurate confidence can be challenging since vanilla LLMs are known to be overconfident on their own responses and their confidence often exceeds the actual accuracy.
 
