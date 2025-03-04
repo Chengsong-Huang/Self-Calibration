@@ -197,7 +197,15 @@ We opensource our datasets and models on the [huggingface](https://huggingface.c
 - [Qwen2.5-7B-Instruct](https://huggingface.co/datasets/HINT-lab/Qwen2.5-7B-Instruct-Self-Calibration)
 - [Llama_3.1-8B-Instruct](https://huggingface.co/datasets/HINT-lab/Llama_3.1-8B-Instruct-Self-Calibration)
 
-<!-- # 💬 Citation
+# 💬 Citation
 ```
-
-``` -->
+@misc{huang2025efficienttesttimescalingselfcalibration,
+      title={Efficient Test-Time Scaling via Self-Calibration}, 
+      author={Chengsong Huang and Langlin Huang and Jixuan Leng and Jiacheng Liu and Jiaxin Huang},
+      year={2025},
+      eprint={2503.00031},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2503.00031}, 
+}
+```
