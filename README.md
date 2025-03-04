@@ -1,7 +1,8 @@
 # Efficient Test-Time Scaling via Self-Calibration
 
-The official repository which contains the code and pre-trained models/datasets for our paper ```Efficient Test-Time Scaling via Self-Calibration```. 
+The official repository which contains the code and pre-trained models/datasets for our paper [Efficient Test-Time Scaling via Self-Calibration](https://arxiv.org/abs/2503.00031). 
 # 🔥 Updates
+- [**2025-3-3**]: We released our [paper](https://arxiv.org/abs/2503.00031).
 - [**2025-2-25**]: We released our codes, models and datasets.
 
 # 🏴󠁶󠁵󠁭󠁡󠁰󠁿 Overview
@@ -196,4 +197,7 @@ We opensource our datasets and models on the [huggingface](https://huggingface.c
 - [Qwen2.5-7B-Instruct](https://huggingface.co/datasets/HINT-lab/Qwen2.5-7B-Instruct-Self-Calibration)
 - [Llama_3.1-8B-Instruct](https://huggingface.co/datasets/HINT-lab/Llama_3.1-8B-Instruct-Self-Calibration)
 
-<!-- # 💬 Citation -->
+<!-- # 💬 Citation
+```
+
+``` -->
