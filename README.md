@@ -199,13 +199,10 @@ We opensource our datasets and models on the [huggingface](https://huggingface.c
 
 # 💬 Citation
 ```
-@misc{huang2025efficienttesttimescalingselfcalibration,
-      title={Efficient Test-Time Scaling via Self-Calibration}, 
-      author={Chengsong Huang and Langlin Huang and Jixuan Leng and Jiacheng Liu and Jiaxin Huang},
-      year={2025},
-      eprint={2503.00031},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2503.00031}, 
+@article{huang2025efficient,
+  title={Efficient test-time scaling via self-calibration},
+  author={Huang, Chengsong and Huang, Langlin and Leng, Jixuan and Liu, Jiacheng and Huang, Jiaxin},
+  journal={arXiv preprint arXiv:2503.00031},
+  year={2025}
 }
 ```
